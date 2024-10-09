@@ -8,7 +8,7 @@ OBJS=
 all: $(OBJS) $(PROGS)
 
 prog: main.c $(OBJS)
-	$(CC) $(CFLAGS) $< -o $@ $(OBJS) $(LFLAGS)
+	$(CC) $(CFLAGS) $(DFLAGS) $< -o $@ $(OBJS) $(LFLAGS)
 
 clean:
 	rm -f $(PROGS) *.o ~*
