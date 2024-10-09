@@ -7,15 +7,6 @@
 const int WIDTH = 640, HEIGHT = 480;
 const int dt = 50; /* tick every 20ms */
 
-/* get timestep in microseconds */
-long int get_timestamp(void) {
-    struct timeval tv;
-    gettimeofday(&tv, NULL);
-
-    return tv.tv_usec;
-}
-
-
 /* Helper function to set one pixel's color in the framebuffer */
 static void set_pixel(SDL_Surface *surface, int x, int y, Uint32 pixel) {
   Uint32 * const target_pixel = (Uint32 *) ((Uint8 *) surface->pixels
@@ -32,8 +23,9 @@ static void draw_rect(SDL_Surface *surf, int x, int y, int w, int h, Uint32 pixe
         for (j = x; j < x + w; ++j) {
             set_pixel(surf, j, i, pixel);
         }
-    } 
+    }
 }
+
 
 /* Helper. polls window for new input  */
 static int window_poll_event(void) {
@@ -55,7 +47,6 @@ static void swap_surface(SDL_Surface *x, SDL_Surface *y) {
 }
 
 
-float x = 64;
 /* Main program loop */
 void main_loop(SDL_Window *window, SDL_Surface *surf, SDL_Surface *back) {
     int quit = 0;
@@ -72,15 +63,15 @@ void main_loop(SDL_Window *window, SDL_Surface *surf, SDL_Surface *back) {
 
             /* Update and poll input */
             quit = window_poll_event();
-            x += 20 * (delta / 1000);
 
-            printf("frame_time = %ims\n", frame_time);
+            /* Update game */
+
             frame_time -= delta;
         }
 
         memset(surf->pixels, 0x00, surf->w * surf->h * surf->format->BytesPerPixel);
 
-        draw_rect(surf, x, 32, 32, 32, SDL_MapRGB(surf->format, 255, 0, 0));
+        /* draw game */
 
         SDL_UpdateWindowSurface(window);
         swap_surface(surf, back);
@@ -120,6 +111,7 @@ int main(int argc, char **argv) {
 
     /* Cleanup */
     SDL_DestroyWindow(window);
+    SDL_DestroyWindowSurface(back_buff);
     SDL_Quit();
 
     return EXIT_SUCCESS;
