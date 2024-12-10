@@ -40,6 +40,14 @@ Vector2 Vector2::operator-(const Vector2 &rhs) {
   return Vector2(this->x - rhs.x, this->y - rhs.y);
 }
 
+Vector2 Vector2::operator*(const double scaler) {
+  return Vector2(this->x * scaler, this->y * scaler);
+}
+
+Vector2 Vector2::operator/(const double scaler) {
+  return Vector2(this->x / scaler, this->y / scaler);
+}
+
 void Vector2::operator+=(const Vector2 &rhs) {
   this->x += rhs.x;
   this->y += rhs.y;
