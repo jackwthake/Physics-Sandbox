@@ -14,6 +14,8 @@ public:
   Vector2 operator+(const Vector2 &Rhs);
   Vector2 operator-(const Vector2 &Rhs);
 
+  void operator+=(const Vector2 &Rhs);
+
   void operator*=(const double scaler);
   void operator/=(const double scaler);
 

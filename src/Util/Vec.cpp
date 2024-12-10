@@ -40,6 +40,11 @@ Vector2 Vector2::operator-(const Vector2 &rhs) {
   return Vector2(this->x - rhs.x, this->y - rhs.y);
 }
 
+void Vector2::operator+=(const Vector2 &rhs) {
+  this->x += rhs.x;
+  this->y += rhs.y;
+}
+
 void Vector2::operator*=(const double scaler) {
   this->x *= scaler;
   this->y *= scaler;
@@ -55,7 +60,7 @@ double Vector2::operator*(const Vector2 &rhs) { // dot product
 }
 
 double Vector2::cross_prod(const Vector2 &rhs) { // TODO: Fix;
-  return this->mag() * rhs.mag() * sin(angleBetweenVectors(*this, rhs));
+  return this->mag() * rhs.mag() * sin(angleBetweenVectors(*this, rhs)); // |A||B|*sin(theta)
 }
 
 double Vector2::mag() const {
