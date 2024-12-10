@@ -9,18 +9,20 @@
 #include "Util/Vec.h"
 
 const int WIDTH = 640, HEIGHT = 480;
-const int TICKS_PER_SECOND = 30;
+const int TICKS_PER_SECOND = 5;
 const int TICK_INTERVAL = 1000 / TICKS_PER_SECOND;  // milliseconds per tick
 
 /* Physics Constants */
 const double G = 9.81;
+const double Pixel_To_Meter = 32; // 1 meter = 32 pixels
+const int Floor_Height = 15; // 15 meters from top left origin
 
 /* Basic physics object, has poisition, bounds, and something to modulate position. */
 struct Object {
-  Vector2 position = { 320, 0 }, velocity = { 0, 0 }, acceleration = { 0, 0 };
-  Vector2 bounds = { 32, 32 }; //
+  Vector2 position = { 4, 0 }, velocity = { 0, 0 }, acceleration = { 0, 0 };
+  Vector2 bounds = { 1, 1 }; // 1 meter x 1 meter
 
-  double mass = .5; // 5 grams
+  double mass = 1; // 1kg
   bool grounded = false;
 };
 
@@ -37,9 +39,10 @@ static void set_pixel(SDL_Surface *surface, int x, int y, Uint32 pixel) {
 /* Helper function to draw rect at specified x, y of w, h */
 static void draw_rect(SDL_Surface *surf, Vector2 &pos, Vector2 &bounds, Uint32 pixel) {
     int i, j;
-    for (i = pos.y; i < pos.y + bounds.y; ++i) {
-        for (j = pos.x; j < pos.x + bounds.x; ++j) {
-            set_pixel(surf, j, i, pixel);
+    for (i = pos.y * Pixel_To_Meter; i < pos.y * Pixel_To_Meter + bounds.y * Pixel_To_Meter; ++i) {
+        for (j = pos.x * Pixel_To_Meter; j < pos.x * Pixel_To_Meter + bounds.x * Pixel_To_Meter; ++j) {
+            if (i <= HEIGHT && j <= WIDTH && i >= 0 && j >= 0)
+              set_pixel(surf, j, i, pixel);
         }
     }
 }
@@ -70,21 +73,21 @@ void apply_force(Object &obj, Vector2 &F) {
 }
 
 /* Update Object */
-void update_object(Object &obj) {
-  if (obj.position.y + obj.bounds.y < HEIGHT)
-    obj.acceleration.y = obj.mass * G;
+void update_object(Object &obj, double dt) {
+  if (obj.position.y + obj.bounds.y < Floor_Height)
+    obj.acceleration.y = obj.mass * G * dt;
 
-  if (obj.position.y + obj.bounds.y >= HEIGHT) {
+  if (obj.position.y + obj.bounds.y >= Floor_Height) {
     obj.acceleration.y = 0;
     obj.velocity.y = 0;
-    obj.position.y = HEIGHT - obj.bounds.y;
+    obj.position.y = Floor_Height - obj.bounds.y;
 
     obj.grounded = true;
   }
 
   const uint8_t *key_state = SDL_GetKeyboardState(NULL);
   if (key_state[SDL_SCANCODE_SPACE] && obj.grounded) {
-    Vector2 F = { 0.0, -8 * obj.mass * G }; // Apply an upward force to the object
+    Vector2 F = { 0.0, -5 * obj.mass * G * dt }; // Apply an upward force to the object
     apply_force(obj, F);
 
     obj.grounded = false;
@@ -116,7 +119,7 @@ void main_loop(SDL_Window *window, SDL_Surface *surf, SDL_Surface *back) {
     auto deltaTime = currentTime - lastTime;
 
     if (deltaTime.count() >= TICK_INTERVAL) {
-      update_object(obj);
+      update_object(obj, duration<double>(deltaTime).count());
 
       lastTime = currentTime;  // Reset the last time
     }
