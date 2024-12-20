@@ -9,7 +9,8 @@
 #include "Util/Vec.h"
 #include "Util/Helpers.h"
 
-#include "Object.h"
+#include "Objects/Object.h"
+#include "Objects/test.h"
 
 /* Helper. polls window for new input  */
 static int window_poll_event(void) {
@@ -39,6 +40,8 @@ void main_loop(SDL_Window *window, SDL_Surface *surf, SDL_Surface *back) {
   /* Setup clocks */
   steady_clock::time_point lastTime = steady_clock::now();
   steady_clock::time_point currentTime;
+
+  Test_Obj test;
 
   while (!window_poll_event()) {
     currentTime = steady_clock::now();
